@@ -60,8 +60,14 @@ class ServiceAuthentification {
 
   // Déconnecter de Firebase
   Future<bool> signOut() async {
-    bool result = false;
-    return result;
+    try {
+      // Cette ligne effectue la vraie déconnexion auprès de Firebase
+      await instance.signOut();
+      return true;
+    } catch (e) {
+      print("Erreur lors de la déconnexion : $e");
+      return false;
+    }
   }
 
   // Récupérer l'id unique de l'utilisateur
@@ -69,7 +75,6 @@ class ServiceAuthentification {
 
   // Voir si vous etes l'utilisateur
   bool isMe(String profileId) {
-    bool result = false;
-    return result;
+    return myId == profileId;
   }
 }

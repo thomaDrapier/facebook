@@ -4,6 +4,10 @@ import '../services_firebase/service_authentification.dart';
 import '../services_firebase/service_firestore.dart';
 import '../modeles/membre.dart';
 import '../widgets/widget_vide.dart';
+import '../pages/page_acceuil.dart';
+import '../pages/page_profil.dart';
+import '../pages/page_members.dart';
+import 'page_ecrire_post.dart';
 
 class PageNavigation extends StatefulWidget {
   const PageNavigation({super.key});
@@ -38,16 +42,33 @@ class _PageNavigationState extends State<PageNavigation> {
 
           // Liste des pages à afficher selon l'onglet sélectionné
           List<Widget> bodies = [
-            const Center(child: Text("Accueil")),
-            const Center(child: Text("Membres")),
-            const Center(child: Text("Ecrire un post")),
+            const PageAccueil(),
+            const PageMembres(),
+            PageEcrirePost(
+              member: member,
+              newselection: (int newIndex) {
+                setState(() {
+                  index = newIndex;
+                });
+              },
+            ),
             const Center(child: Text("Notifications")),
-            const Center(child: Text("Profil")),
+            PageProfil(member: member),
           ];
 
           return Scaffold(
             appBar: AppBar(
               title: Text(member.fullName),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.red),
+                  tooltip: 'Se déconnecter',
+                  onPressed: () {
+                    // Appel de la méthode de déconnexion
+                    ServiceAuthentification().signOut();
+                  },
+                ),
+              ],
             ),
             bottomNavigationBar: NavigationBar(
               labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,

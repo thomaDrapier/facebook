@@ -1,28 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import nécessaire pour le StreamBuilder
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../services_firebase/service_firestore.dart';
+import '../modeles/constantes.dart';
+import '../widgets/widget_vide.dart';
 
 class PageAccueil extends StatelessWidget {
   const PageAccueil({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Accueil Firebase'),
-        backgroundColor: Colors.deepPurple[100],
-      ),
-      // C'est ici que tu insères le code StreamBuilder qui t'a été fourni
-      body: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.userChanges(),
-        builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-          // On vérifie si l'utilisateur est connecté
-          if (snapshot.hasData) {
-            return const Center(child: Text("Connecté"));
-          } else {
-            return const Center(child: Text("Non connecté"));
-          }
-        },
-      ),
+    return StreamBuilder<QuerySnapshot>(
+      stream: ServiceFirestore().allPosts(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData) {
+          final doc = snapshot.data!.docs;
+          
+          return ListView.builder(
+            itemCount: doc.length,
+            itemBuilder: (context, index) {
+              // Récupération des données brutes du post sous forme de Map
+              final postMap = doc[index].data() as Map<String, dynamic>;
+              
+              // Affichage temporaire en attendant les étapes 6 et 9 du projet
+              return ListTile(
+                leading: const Icon(Icons.turned_in_not),
+                title: Text(postMap[textKey] ?? 'Message vide'),
+              );
+            },
+          );
+        } else {
+          return const EmptyBody();
+        }
+      },
     );
   }
 }
